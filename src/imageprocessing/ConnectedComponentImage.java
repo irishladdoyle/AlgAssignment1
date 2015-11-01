@@ -2,45 +2,44 @@ package imageprocessing;
 
 
 import java.awt.Color;
-import java.util.Random;
+
 import edu.princeton.cs.introcs.Picture;
 
 
 /*************************************************************************
- * Compilation: javac ConnectedComponentImage.java
+ * This is the Connected Component Image class
  * 
- * The <tt>ConnectedComponentImage</tt> class
- * <p>
- * You do the rest....
- * 
- * @author 
- * @param <Picture>
+ *  @author Jamie Doyle (20067808)
+ *  
+ * Final version of Algorithm Assignment 1
  *************************************************************************/
+
+/**
+ * Instance variables
+ */
 public class ConnectedComponentImage<picture> {
 
-	Picture picture;
+	Picture picture; 
 	private int count;   // number of components
-	private int[] id;
-	private static final double Threshold = 0;
-	private static final int width = 0;
-	private static final int height = 0;
+	private int[] id;    //Id of Component
+	private static final int width = 0;  //Width
+	private static final int height = 0;  //Height
+	private static final double THRESHOLD = 0;   //Threshold
 
 
 	/**
-	 * Initialise fields
-	 * 
-	 * @param fileLocation
+	 * Constructor for the class
 	 */
 
 	public ConnectedComponentImage(String filelocation){
-		picture = new Picture("C:/Users/Jamie/Pictures/Saved Pictures/bacteria.bmp");
+		this.picture = new Picture("C:/Users/Jamie/Pictures/Saved Pictures/bacteria.bmp");
 		int N = width*height;
 		id = new int [N];
-		countComponents();
-		weightedQuickUnionUF(N);
-		identifyComponentImage();
-		colourComponentImage();
-		binaryComponentImage();
+		countComponents();  //Count
+		weightedQuickUnionUF(N);  //Quick Union Find
+		identifyComponentImage();  //Boundary 
+		//colourComponentImage();  //Random Color
+		binaryComponentImage();  //Binarise image
 	}
 	/**
 	 * Returns the number of components identified in the image.
@@ -58,6 +57,11 @@ public class ConnectedComponentImage<picture> {
 		this.count = count;
 	}
 
+	/**
+	 * Quick Union Find union command: connect two objects and finds a path connecting one object to another
+	 * Weighted: Is a quicker and more refined version compressing the path and making a smaller tree with the objects
+	 * @param N
+	 */
 	public void weightedQuickUnionUF(int N) {
 
 		id = new int [N];
@@ -65,6 +69,10 @@ public class ConnectedComponentImage<picture> {
 			id[i] = i;
 		count = N;
 	}
+
+	/**
+	 * Returns the number of components found.
+	 */
 	public int count() {
 		return 0;
 	}
@@ -72,15 +80,19 @@ public class ConnectedComponentImage<picture> {
 	/**
 	 * Returns the component identifier for the component containing site p.
 	 */
+
 	public int find(int p) {
 		//validate(p); Original Quick Union
 		//return id[p]; Original Quick Union
 		if (p != id[p])
-			id[p] = find (id[p]); //Compression attempt
+			id[p] = find (id[p]); //Weighted Compression attempt
 		return id[p];
 	}
 
-	// validate that p is a valid index
+	/**
+	 * This validates that p is a valid index
+	 * @param p
+	 */
 	private void validate(int p) {
 		int N = id.length;
 		if (p < 0 || p >= N) {
@@ -96,8 +108,7 @@ public class ConnectedComponentImage<picture> {
 	}
 
 	/**
-	 * Merges the component containing site p with the 
-	 * the component containing site q.
+	 * Merges the component containing site p with the component containing site q.
 	 */
 	public void union(int p, int q) {
 		int pid = id[p];
@@ -168,31 +179,38 @@ public class ConnectedComponentImage<picture> {
 	 * 
 	 * @return a picture object with all components coloured.
 	 */
-	public Picture colourComponentImage() {
+	//public Picture colourComponentImage() { Help was needed for this method from http://goo.gl/yUWkLm
 
-		Picture picture = new Picture("C:/Users/Jamie/Pictures/Saved Pictures/bacteria.bmp");
-		int width = picture.width();
-		int height = picture.height();
+	//Picture picture = new Picture("C:/Users/Jamie/Pictures/Saved Pictures/bacteria.bmp");
+	//int height = picture.height();
+	//int width = picture.width();
+	//int red = getRed();
+	//int green = getGreen();
+	//int blue = getBlue();
 
-		// convert to black and white
-		for (int x = 0; x < width; x++) 
-		{
-			for (int y = 0; y < height; y++) 
-			{
-				Color color = picture.get(x, y);
-				if (Luminance.lum(color) < Threshold)
-				{
-					picture.set(x, y, Color.BLACK);
-				}
-				else
-				{
-					picture.set(x, y, Color.WHITE);
-				}
-			}
-		}
-		return colourComponentImage();
-	}
+	// convert to black and white
+	//for (int x = 0; x < width; x++) 
+	//{
+	//for (int y = 0; y < height; y++) 
+	//{
+	//Color color = picture.get(x, y);
+	//if (Luminance.lum(color) < THRESHOLD)
+	//{
+	//	picture.set(x, y, Color.BLACK);
+	//}
+	//else
+	//{
+	//picture.set(x, y, Color.WHITE);
+	//}
+	//}
+	//}
+	//return colourComponentImage();
+	//}
 
+
+	//private int getRGB() {
+	//return 0;
+	//}
 
 	/**
 	 * Returns a binarised version of the original image
@@ -201,20 +219,26 @@ public class ConnectedComponentImage<picture> {
 	 */
 	public Picture binaryComponentImage(){
 		Picture pic = new Picture("C:/Users/Jamie/Pictures/Saved Pictures/bacteria.bmp");
-		int width = picture.width();
+		Picture grey = new Picture(pic);
+		Picture bAndW = new Picture(pic);
 		int height = picture.height();
+		int width = picture.width();
 		double Threshold = 128.0;
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < pic.height(); j++) {
 				Color color = pic.get(i, j);
-				if (Luminance.lum(color) <= Threshold){
-					picture.set(i, j, Color.WHITE);	
-				}					
-				else{
-					picture.set(i, j, Color.BLACK);				}
+				grey.set(i, j, Luminance.toGray(color));
+				double lum = Luminance.lum(color);
+				if (lum >= THRESHOLD)
+					bAndW.set(i, j, Color.WHITE);
+				else
+					bAndW.set(i, j, Color.BLACK);
 			}
 		}
-		return identifyComponentImage();
+		pic.show();
+		grey.show();
+		bAndW.show();
+		return bAndW;
 	}
-}
 
+}
