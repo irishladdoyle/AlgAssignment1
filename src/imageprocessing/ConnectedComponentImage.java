@@ -22,10 +22,9 @@ public class ConnectedComponentImage<picture> {
 	Picture picture; 
 	private int count;   // number of components
 	private int[] id;    //Id of Component
-	private static final int width = 0;  //Width
-	private static final int height = 0;  //Height
-	private static final double THRESHOLD = 0;   //Threshold
-
+	private int width;  //Width
+	private int height;  //Height
+	
 
 	/**
 	 * Constructor for the class
@@ -47,14 +46,7 @@ public class ConnectedComponentImage<picture> {
 	 * @return the number of components (between 1 and N)
 	 */
 	public int countComponents() {
-		return 0;
-	}
-	public int getCount() {
 		return count;
-	}
-
-	public void setCount(int count) {
-		this.count = count;
 	}
 
 	/**
@@ -219,29 +211,31 @@ public class ConnectedComponentImage<picture> {
 	 */
 	public Picture binaryComponentImage(){
 		Picture pic = new Picture("C:/Users/Jamie/Pictures/Saved Pictures/bacteria.bmp");
-		Picture grey = new Picture(pic);
-		Picture bAndW = new Picture(pic);
+		/*Picture grey = new Picture(pic);
+		Picture bAndW = new Picture(pic);*/
 		int height = picture.height();
 		int width = picture.width();
 		double Threshold = 128.0;
 		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < pic.height(); j++) {
+			for (int j = 0; j < height; j++) {
 				Color color = pic.get(i, j);
-				grey.set(i, j, Luminance.toGray(color));
-				double lum = Luminance.lum(color);
-				if (lum >= THRESHOLD)
-					bAndW.set(i, j, Color.WHITE);
+				//grey.set(i, j, Luminance.toGray(color));
+				//double lum = Luminance.lum(color);
+				if (Luminance.lum(color) < Threshold)
+					picture.set(i, j, Color.WHITE);
 				else
-					bAndW.set(i, j, Color.BLACK);
+					picture.set(i, j, Color.BLACK);
 			}
 		}
 		pic.show();
-		grey.show();
+		return picture;
+		/*grey.show();
 		bAndW.show();
-		return bAndW;
+		return bAndW;*/
 	}
 
 }
+
 
 
 
